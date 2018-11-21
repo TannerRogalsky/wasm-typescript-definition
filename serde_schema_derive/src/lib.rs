@@ -1,14 +1,9 @@
-// TODO delete
-#![allow(non_snake_case)]
-
 extern crate proc_macro;
 #[macro_use]
 extern crate quote;
 extern crate serde_derive_internals;
 extern crate syn;
 extern crate serde;
-
-use std::borrow::Borrow;
 
 use serde_derive_internals::{ast, Ctxt};
 use syn::DeriveInput;
@@ -22,15 +17,15 @@ extern crate serde_bytes;
 
 
 
-#[proc_macro_derive(SchemaSerialize)]
-pub fn derive_schema_serialize(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[proc_macro_derive(TypescriptDefinition)]
+pub fn derive_typescript_definition(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     // eprintln!(".........[input] {}", input);
     let input: DeriveInput = syn::parse(input).unwrap();
 
     let cx = Ctxt::new();
     let container = ast::Container::from_ast(&cx, &input);
 
-    let (typescript, _) = match container.data {
+    let typescript = match container.data {
         ast::Data::Enum(variants) => {
             derive_enum::derive_enum(variants, &container.attrs)
         }
@@ -57,11 +52,6 @@ pub fn derive_schema_serialize(input: proc_macro::TokenStream) -> proc_macro::To
     cx.check().unwrap();
 
     expanded.into()
-}
-
-fn variant_field_type_variable(variant_idx: usize, field_idx: usize) -> (String, syn::Ident) {
-    let var = format!("type_id_{}_{}", variant_idx, field_idx);
-    (var.clone(), syn::Ident::from(var))
 }
 
 fn collapse_list_bracket(body: Vec<quote::Tokens>) -> quote::Tokens {
@@ -112,40 +102,17 @@ fn type_to_ts(ty: &syn::Type) -> quote::Tokens {
     }
 }
 
-fn derive_register_field_types<'a, I>(variant_idx: usize, fields: I) -> (quote::Tokens, quote::Tokens)
-where
-    I: IntoIterator,
-    I::Item: Borrow<ast::Field<'a>>,
-{
-    let mut expanded = quote!{};
-    let mut expanded_TS = vec![];
-    for (field_idx, field_item) in fields.into_iter().enumerate() {
-        let field = field_item.borrow();
-        let field_type = &field.ty;
-        let (type_id_ident_TS, type_id_ident) = variant_field_type_variable(variant_idx, field_idx);
-        expanded.append_all(quote!{
-            let #type_id_ident =
-                <#field_type as ::serde_schema::SchemaSerialize>::schema_register(schema)?;
-        });
-        expanded_TS.push(type_to_ts(field_type));
-    }
-    (collapse_list_brace(expanded_TS), expanded)
-}
-
-fn derive_field<'a>(variant_idx: usize, field_idx: usize, field: &ast::Field<'a>) -> (quote::Tokens, quote::Tokens) {
-    let (_, type_id_ident) = variant_field_type_variable(variant_idx, field_idx);
+fn derive_field<'a>(_variant_idx: usize, _field_idx: usize, field: &ast::Field<'a>) -> quote::Tokens {
     let field_name = field.attrs.name().serialize_name();
-
     let ty = type_to_ts(&field.ty);
-    (quote!{
+    quote!{
         #field_name: #ty
-    }, quote!{})
+    }
 }
 
-fn derive_element<'a>(variant_idx: usize, element_idx: usize, field: &ast::Field<'a>) -> (quote::Tokens, quote::Tokens) {
-    let (type_id_ident_TS, type_id_ident) = variant_field_type_variable(variant_idx, element_idx);
+fn derive_element<'a>(_variant_idx: usize, _element_idx: usize, field: &ast::Field<'a>) -> quote::Tokens {
     let ty = type_to_ts(&field.ty);
-    (quote!{
+    quote!{
         #ty
-    }, quote!{})
+    }
 }

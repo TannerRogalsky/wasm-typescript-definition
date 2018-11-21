@@ -1,22 +1,20 @@
+#![allow(unused)]
+
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate serde_schema;
 #[macro_use]
-extern crate serde_schema_derive;
+extern crate wasm_typescript_definition;
 #[macro_use]
 extern crate quote;
 
 use std::borrow::Cow;
-use quote::ToTokens;
-use quote::Tokens;
 use serde::de::value::Error;
-use serde_schema::types::{Type, TypeId};
-use serde_schema::{Schema, SchemaSerialize};
+use wasm_typescript_definition::TypescriptDefinition;
 
 #[test]
 fn unit_struct() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     struct Unit;
 
     assert_eq!(Unit_typescript_definition(), quote!{
@@ -26,7 +24,7 @@ fn unit_struct() {
 
 #[test]
 fn newtype_struct() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     struct Newtype(i64);
 
     assert_eq!(Newtype_typescript_definition(), quote!{
@@ -36,7 +34,7 @@ fn newtype_struct() {
 
 #[test]
 fn tuple_struct() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     struct Tuple(i64, String);
 
     assert_eq!(Tuple_typescript_definition(), quote!{
@@ -46,7 +44,7 @@ fn tuple_struct() {
 
 #[test]
 fn struct_with_borrowed_fields() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     struct Borrow<'a> {
         raw: &'a str,
         cow: Cow<'a, str>
@@ -60,7 +58,7 @@ fn struct_with_borrowed_fields() {
 
 #[test]
 fn struct_point_with_field_rename() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     struct Point {
         #[serde(rename = "X")]
         x: i64,
@@ -68,7 +66,6 @@ fn struct_point_with_field_rename() {
         y: i64,
     }
 
-    // TODO raw should be string(!)
     assert_eq!(Point_typescript_definition(), quote!{
         {"X": number, "Y": number,}
     }.to_string());
@@ -76,7 +73,7 @@ fn struct_point_with_field_rename() {
 
 #[test]
 fn enum_with_renamed_newtype_variants() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     enum Enum {
         #[serde(rename = "Var1")]
         #[allow(unused)]
@@ -98,7 +95,7 @@ fn enum_with_renamed_newtype_variants() {
 
 #[test]
 fn enum_with_unit_variants() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     enum Enum {
         #[allow(unused)]
         V1,
@@ -117,7 +114,7 @@ fn enum_with_unit_variants() {
 
 #[test]
 fn enum_with_tuple_variants() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     enum Enum {
         #[allow(unused)]
         V1(i64, String),
@@ -136,7 +133,7 @@ fn enum_with_tuple_variants() {
 
 #[test]
 fn enum_with_struct_variants_and_renamed_fields() {
-    #[derive(Serialize, SchemaSerialize)]
+    #[derive(Serialize, TypescriptDefinition)]
     enum Enum {
         #[allow(unused)]
         V1 {
