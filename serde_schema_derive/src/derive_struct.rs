@@ -24,7 +24,7 @@ fn derive_struct_newtype<'a>(
 ) -> (quote::Tokens, quote::Tokens) {
     let name = attr_container.name().serialize_name();
     let (_, expanded_type_ids) = derive_register_field_types(0, fields.iter());
-    let (type_id_ident_TS, type_id_ident) = variant_field_type_variable(0, 0);
+    let (_, type_id_ident) = variant_field_type_variable(0, 0);
 
     // let ty = MockTypeId::Custom(55);    
     // let builder = ::serde_schema::types::Type::<MockTypeId>::build()
@@ -59,7 +59,7 @@ fn derive_struct_named_fields<'a>(
     let len = fields.len();
     let name = attr_container.name().serialize_name();
 
-    let (expanded_type_ids_TS, expanded_type_ids) = derive_register_field_types(0, fields.iter());
+    let (_, expanded_type_ids) = derive_register_field_types(0, fields.iter());
 
     let mut expanded_build_type = quote!{
         ::serde_schema::types::Type::build()
@@ -89,7 +89,7 @@ fn derive_struct_tuple<'a>(
     let len = fields.len();
     let name = attr_container.name().serialize_name();
 
-    let (expanded_type_ids_TS, expanded_type_ids) = derive_register_field_types(0, fields.iter());
+    let (_, expanded_type_ids) = derive_register_field_types(0, fields.iter());
 
     let mut expanded_build_type = quote!{
         ::serde_schema::types::Type::build()

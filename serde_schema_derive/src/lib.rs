@@ -1,5 +1,5 @@
 // TODO delete
-#![allow(dead_code, non_snake_case, unused)]
+#![allow(non_snake_case)]
 
 extern crate proc_macro;
 #[macro_use]
@@ -20,23 +20,17 @@ mod derive_struct;
 #[cfg(feature = "bytes")]
 extern crate serde_bytes;
 
-mod types;
-mod schema;
-
-
-
-
 
 
 #[proc_macro_derive(SchemaSerialize)]
 pub fn derive_schema_serialize(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    eprintln!(".........[input] {}", input);
+    // eprintln!(".........[input] {}", input);
     let input: DeriveInput = syn::parse(input).unwrap();
 
     let cx = Ctxt::new();
     let container = ast::Container::from_ast(&cx, &input);
 
-    let (typescript, inner_impl) = match container.data {
+    let (typescript, _) = match container.data {
         ast::Data::Enum(variants) => {
             derive_enum::derive_enum(variants, &container.attrs)
         }
@@ -47,26 +41,14 @@ pub fn derive_schema_serialize(input: proc_macro::TokenStream) -> proc_macro::To
 
     let typescript_string = typescript.to_string();
     let typescript_ident = syn::Ident::from(format!("{}_typescript_definition", container.ident));
-    println!("typescript_ident {:?}", typescript_ident);
 
-    eprintln!("....[typescript] {:?}", typescript_string);
-    eprintln!("........[schema] {:?}", inner_impl);
-    eprintln!();
-    eprintln!();
-    eprintln!();
-
-    let ident = container.ident;
-    let (impl_generics, ty_generics, where_clause) = container.generics.split_for_impl();
+    // eprintln!("....[typescript] {:?}", typescript_string);
+    // eprintln!("........[schema] {:?}", inner_impl);
+    // eprintln!();
+    // eprintln!();
+    // eprintln!();
 
     let expanded = quote!{
-        impl #impl_generics ::serde_schema::SchemaSerialize for #ident #ty_generics #where_clause {
-            fn schema_register<S>(schema: &mut S) -> Result<S::TypeId, S::Error>
-                where S: ::serde_schema::Schema
-            {
-                #inner_impl
-            }
-        }
-
         fn #typescript_ident ( ) -> &'static str {
             #typescript_string
         }
@@ -100,13 +82,13 @@ fn type_to_ts(ty: &syn::Type) -> quote::Tokens {
     // println!("??? {:?}", ty);
     use syn::Type::*;
     match ty {
-        Slice(TypeSlice) => quote!{ any },
-        Array(TypeArray) => quote!{ any },
-        Ptr(TypePtr) => quote!{ any },
-        Reference(TypeReference) => quote!{ any },
-        BareFn(TypeBareFn) => quote!{ any },
-        Never(TypeNever) => quote!{ any },
-        Tuple(TypeTuple) => quote!{ any },
+        Slice(..) => quote!{ any },
+        Array(..) => quote!{ any },
+        Ptr(..) => quote!{ any },
+        Reference(..) => quote!{ any },
+        BareFn(..) => quote!{ any },
+        Never(..) => quote!{ any },
+        Tuple(..) => quote!{ any },
         Path(inner) => {
             // let ty_string = format!("{}", inner.path);
             let result = quote!{ #inner };
@@ -120,13 +102,13 @@ fn type_to_ts(ty: &syn::Type) -> quote::Tokens {
                 _ => quote! { any },
             }
         }
-        TraitObject(TypeTraitObject) => quote!{ any },
-        ImplTrait(TypeImplTrait) => quote!{ any },
-        Paren(TypeParen) => quote!{ any },
-        Group(TypeGroup) => quote!{ any },
-        Infer(TypeInfer) => quote!{ any },
-        Macro(TypeMacro) => quote!{ any },
-        Verbatim(TypeVerbatim) => quote!{ any },
+        TraitObject(..) => quote!{ any },
+        ImplTrait(..) => quote!{ any },
+        Paren(..) => quote!{ any },
+        Group(..) => quote!{ any },
+        Infer(..) => quote!{ any },
+        Macro(..) => quote!{ any },
+        Verbatim(..) => quote!{ any },
     }
 }
 
@@ -157,9 +139,7 @@ fn derive_field<'a>(variant_idx: usize, field_idx: usize, field: &ast::Field<'a>
     let ty = type_to_ts(&field.ty);
     (quote!{
         #field_name: #ty
-    }, quote!{
-        .field(#field_name, #type_id_ident)
-    })
+    }, quote!{})
 }
 
 fn derive_element<'a>(variant_idx: usize, element_idx: usize, field: &ast::Field<'a>) -> (quote::Tokens, quote::Tokens) {
@@ -167,7 +147,5 @@ fn derive_element<'a>(variant_idx: usize, element_idx: usize, field: &ast::Field
     let ty = type_to_ts(&field.ty);
     (quote!{
         #ty
-    }, quote!{
-        .element(#type_id_ident)
-    })
+    }, quote!{})
 }
