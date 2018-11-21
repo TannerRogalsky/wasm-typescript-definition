@@ -4,9 +4,12 @@ extern crate serde_derive;
 extern crate serde_schema;
 #[macro_use]
 extern crate serde_schema_derive;
+#[macro_use]
+extern crate quote;
 
 use std::borrow::Cow;
-
+use quote::ToTokens;
+use quote::Tokens;
 use serde::de::value::Error;
 use serde_schema::types::{Type, TypeId};
 use serde_schema::{Schema, SchemaSerialize};
@@ -59,6 +62,10 @@ fn unit_struct() {
     let mut schema = MockSchema(Vec::new());
     let type_id = Unit::schema_register(&mut schema).unwrap();
 
+    assert_eq!(Unit_typescript_definition(), quote!{
+        {}
+    }.to_string());
+
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
     let a = &schema.0[0];
@@ -72,6 +79,10 @@ fn newtype_struct() {
 
     let mut schema = MockSchema(Vec::new());
     let type_id = Newtype::schema_register(&mut schema).unwrap();
+
+    assert_eq!(Newtype_typescript_definition(), quote!{
+        number
+    }.to_string());
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
@@ -88,6 +99,10 @@ fn tuple_struct() {
 
     let mut schema = MockSchema(Vec::new());
     let type_id = Tuple::schema_register(&mut schema).unwrap();
+
+    assert_eq!(Tuple_typescript_definition(), quote!{
+        [number, string,]
+    }.to_string());
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
@@ -111,6 +126,11 @@ fn struct_with_borrowed_fields() {
 
     let mut schema = MockSchema(Vec::new());
     let type_id = Borrow::schema_register(&mut schema).unwrap();
+
+    // TODO raw should be string(!)
+    assert_eq!(Borrow_typescript_definition(), quote!{
+        {"raw": any, "cow": any,}
+    }.to_string());
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
@@ -136,6 +156,11 @@ fn struct_point_with_field_rename() {
 
     let mut schema = MockSchema(Vec::new());
     let type_id = Point::schema_register(&mut schema).unwrap();
+
+    // TODO raw should be string(!)
+    assert_eq!(Point_typescript_definition(), quote!{
+        {"X": number, "Y": number,}
+    }.to_string());
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
@@ -167,6 +192,13 @@ fn enum_with_renamed_newtype_variants() {
     let mut schema = MockSchema(Vec::new());
     let type_id = Enum::schema_register(&mut schema).unwrap();
 
+    // TODO raw should be string(!)
+    assert_eq!(Enum_typescript_definition(), quote!{
+        | {"tag": "Var1", "fields": boolean,}
+        | {"tag": "Var2", "fields": number,}
+        | {"tag": "Var3", "fields": string,}
+    }.to_string());
+
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
     assert_eq!(
@@ -195,6 +227,12 @@ fn enum_with_unit_variants() {
     let mut schema = MockSchema(Vec::new());
     let type_id = Enum::schema_register(&mut schema).unwrap();
 
+    assert_eq!(Enum_typescript_definition(), quote!{
+        | {"tag": "V1",}
+        | {"tag": "V2",}
+        | {"tag": "V3",}
+    }.to_string());
+
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
     assert_eq!(
@@ -222,6 +260,13 @@ fn enum_with_tuple_variants() {
 
     let mut schema = MockSchema(Vec::new());
     let type_id = Enum::schema_register(&mut schema).unwrap();
+
+    // TODO raw should be string(!)
+    assert_eq!(Enum_typescript_definition(), quote!{
+        | {"tag": "V1", "fields": [number, string,],}
+        | {"tag": "V2", "fields": [number, boolean,],}
+        | {"tag": "V3", "fields": [number, number,],}
+    }.to_string());
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
@@ -270,6 +315,13 @@ fn enum_with_struct_variants_and_renamed_fields() {
 
     let mut schema = MockSchema(Vec::new());
     let type_id = Enum::schema_register(&mut schema).unwrap();
+
+    // TODO raw should be string(!)
+    assert_eq!(Enum_typescript_definition(), quote!{
+        | {"tag": "V1", "fields": { "Foo": boolean, }, }
+        | {"tag": "V2", "fields": { "Bar": number, "Baz": number, }, }
+        | {"tag": "V3", "fields": { "Quux": string, }, }
+    }.to_string());
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
