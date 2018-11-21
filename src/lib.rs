@@ -35,7 +35,7 @@ pub fn derive_typescript_definition(input: proc_macro::TokenStream) -> proc_macr
     };
 
     let typescript_string = typescript.to_string();
-    let typescript_ident = syn::Ident::from(format!("{}_typescript_definition", container.ident));
+    let typescript_ident = syn::Ident::from(format!("{}___typescript_definition", container.ident));
 
     // eprintln!("....[typescript] {:?}", typescript_string);
     // eprintln!("........[schema] {:?}", inner_impl);
@@ -43,11 +43,16 @@ pub fn derive_typescript_definition(input: proc_macro::TokenStream) -> proc_macr
     // eprintln!();
     // eprintln!();
 
-    let expanded = quote!{
-        fn #typescript_ident ( ) -> &'static str {
-            #typescript_string
-        }
-    };
+
+    let mut expanded = quote!{};
+
+    if cfg!(any(debug_assertions, feature = "test-export")) {
+        expanded.append_all(quote!{
+            fn #typescript_ident ( ) -> &'static str {
+                #typescript_string
+            }
+        });
+    }
 
     cx.check().unwrap();
 

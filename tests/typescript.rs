@@ -17,7 +17,7 @@ fn unit_struct() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Unit;
 
-    assert_eq!(Unit_typescript_definition(), quote!{
+    assert_eq!(Unit___typescript_definition(), quote!{
         {}
     }.to_string());
 }
@@ -27,7 +27,7 @@ fn newtype_struct() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Newtype(i64);
 
-    assert_eq!(Newtype_typescript_definition(), quote!{
+    assert_eq!(Newtype___typescript_definition(), quote!{
         number
     }.to_string());
 }
@@ -37,7 +37,7 @@ fn tuple_struct() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Tuple(i64, String);
 
-    assert_eq!(Tuple_typescript_definition(), quote!{
+    assert_eq!(Tuple___typescript_definition(), quote!{
         [number, string,]
     }.to_string());
 }
@@ -51,7 +51,7 @@ fn struct_with_borrowed_fields() {
     }
 
     // TODO raw should be string(!)
-    assert_eq!(Borrow_typescript_definition(), quote!{
+    assert_eq!(Borrow___typescript_definition(), quote!{
         {"raw": any, "cow": any,}
     }.to_string());
 }
@@ -66,7 +66,7 @@ fn struct_point_with_field_rename() {
         y: i64,
     }
 
-    assert_eq!(Point_typescript_definition(), quote!{
+    assert_eq!(Point___typescript_definition(), quote!{
         {"X": number, "Y": number,}
     }.to_string());
 }
@@ -86,7 +86,7 @@ fn enum_with_renamed_newtype_variants() {
         V3(String),
     }
     
-    assert_eq!(Enum_typescript_definition(), quote!{
+    assert_eq!(Enum___typescript_definition(), quote!{
         | {"tag": "Var1", "fields": boolean,}
         | {"tag": "Var2", "fields": number,}
         | {"tag": "Var3", "fields": string,}
@@ -105,7 +105,7 @@ fn enum_with_unit_variants() {
         V3,
     }
 
-    assert_eq!(Enum_typescript_definition(), quote!{
+    assert_eq!(Enum___typescript_definition(), quote!{
         | {"tag": "V1",}
         | {"tag": "V2",}
         | {"tag": "V3",}
@@ -124,7 +124,7 @@ fn enum_with_tuple_variants() {
         V3(i64, u64),
     }
 
-    assert_eq!(Enum_typescript_definition(), quote!{
+    assert_eq!(Enum___typescript_definition(), quote!{
         | {"tag": "V1", "fields": [number, string,],}
         | {"tag": "V2", "fields": [number, boolean,],}
         | {"tag": "V3", "fields": [number, number,],}
@@ -154,7 +154,7 @@ fn enum_with_struct_variants_and_renamed_fields() {
         },
     }
     
-    assert_eq!(Enum_typescript_definition(), quote!{
+    assert_eq!(Enum___typescript_definition(), quote!{
         | {"tag": "V1", "fields": { "Foo": boolean, }, }
         | {"tag": "V2", "fields": { "Bar": number, "Baz": number, }, }
         | {"tag": "V3", "fields": { "Quux": string, }, }

@@ -1,8 +1,20 @@
-[workspace]
-members = [
-  "serde_schema",
-  "serde_schema_derive"
-]
+[package]
+name = "wasm_typescript_definition"
+version = "0.1.0"
+description = "serde support for exporting Typescript definitions using wasm-bindgen"
+readme = "README.md"
+authors = ["Tim Ryan <id@timryan.org>", "Sam Rijs <srijs@airpost.net>"]
+license = "MIT/Apache-2.0"
 
-[patch.crates-io]
-serde_schema = { path = './serde_schema/' }
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "0.5.2"
+serde_derive_internals = "0.23.1"
+syn = {version = "0.13.0", features = ["extra-traits"]}
+serde = "1.0.39"
+
+[dev-dependencies]
+serde = "1.0.39"
+serde_derive = "1.0.42"
