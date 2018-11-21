@@ -3,3 +3,6 @@ members = [
   "serde_schema",
   "serde_schema_derive"
 ]
+
+[patch.crates-io]
+serde_schema = { path = './serde_schema/' }

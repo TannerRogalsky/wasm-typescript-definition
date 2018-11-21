@@ -61,7 +61,8 @@ fn unit_struct() {
 
     assert_eq!(type_id, MockTypeId::Custom(0));
     assert_eq!(schema.0.len(), 1);
-    assert_eq!(schema.0[0], Type::build().unit_struct_type("Unit"));
+    let a = &schema.0[0];
+    assert_eq!(*a, Type::build().unit_struct_type("Unit"));
 }
 
 #[test]
