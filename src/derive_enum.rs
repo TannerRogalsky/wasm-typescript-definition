@@ -9,7 +9,7 @@ pub fn derive_enum<'a>(
     variants: Vec<ast::Variant<'a>>,
     _attr_container: &attr::Container,
 ) -> quote::Tokens {
-    variants.into_iter().enumerate()
+    let tokens = variants.into_iter().enumerate()
         .map(|(variant_idx, variant)| {
             let variant_name = variant.attrs.name().serialize_name();
             match variant.style {
@@ -21,7 +21,9 @@ pub fn derive_enum<'a>(
                 ast::Style::Unit => derive_unit_variant(&variant_name),
             }
         })
-        .fold(quote!{}, |mut agg, tokens| { agg.append_all(tokens); agg })
+        .fold(quote!{}, |mut agg, tokens| { agg.append_all(tokens); agg });
+    
+    tokens
 }
 
 fn derive_unit_variant<'a>(variant_name: &str) -> quote::Tokens {

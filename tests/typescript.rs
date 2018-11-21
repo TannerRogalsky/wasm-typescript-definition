@@ -7,10 +7,13 @@ extern crate serde_derive;
 extern crate wasm_typescript_definition;
 #[macro_use]
 extern crate quote;
+#[macro_use]
+extern crate wasm_bindgen;
 
 use std::borrow::Cow;
 use serde::de::value::Error;
 use wasm_typescript_definition::TypescriptDefinition;
+use wasm_bindgen::prelude::*;
 
 #[test]
 fn unit_struct() {

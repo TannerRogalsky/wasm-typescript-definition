@@ -1,20 +1,21 @@
 [package]
-name = "wasm_typescript_definition"
+name = "wasm-typescript-definition"
 version = "0.1.0"
 description = "serde support for exporting Typescript definitions using wasm-bindgen"
 readme = "README.md"
 authors = ["Tim Ryan <id@timryan.org>", "Sam Rijs <srijs@airpost.net>"]
 license = "MIT/Apache-2.0"
+repository = "https://github.com/tcr/wasm-typescript-definition"
 
 [lib]
 proc-macro = true
 
 [dependencies]
-quote = "0.5.2"
-serde_derive_internals = "0.23.1"
-syn = {version = "0.13.0", features = ["extra-traits"]}
-serde = "1.0.39"
+quote = "0.5"
+serde_derive_internals = "0.23"
+syn = "=0.13"
+serde = "1"
+wasm-bindgen = "0.2"
 
 [dev-dependencies]
-serde = "1.0.39"
-serde_derive = "1.0.42"
+serde_derive = "1"

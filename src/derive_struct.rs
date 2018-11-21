@@ -10,12 +10,14 @@ pub fn derive_struct<'a>(
     fields: Vec<ast::Field<'a>>,
     attr_container: &attr::Container,
 ) -> quote::Tokens {
-    match style {
+    let tokens = match style {
         ast::Style::Struct => derive_struct_named_fields(fields, attr_container),
         ast::Style::Newtype => derive_struct_newtype(fields, attr_container),
         ast::Style::Tuple => derive_struct_tuple(fields, attr_container),
         ast::Style::Unit => derive_struct_unit(attr_container),
-    }
+    };
+
+    tokens
 }
 
 fn derive_struct_newtype<'a>(
@@ -45,6 +47,6 @@ fn derive_struct_tuple<'a>(
     _attr_container: &attr::Container,
 ) -> quote::Tokens {
     collapse_list_bracket(fields.into_iter()
-        .map(|field| type_to_ts(&field.ty))
+        .map(|field| type_to_ts(field.ty))
         .collect::<Vec<_>>())
 }
