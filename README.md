@@ -2,7 +2,7 @@
 
 Exports serde-serializable structs and enums to Typescript definitions when used with wasm-bindgen.
 
-```
+```typescript
 #[derive(Serialize, TypescriptDefinition)]
 enum Enum {
     #[allow(unused)]
@@ -27,7 +27,7 @@ enum Enum {
 
 With the patched version of wasm-bindgen that supports typescript_custom_section (TODO), this will output in your `.d.ts` definition file:
 
-```
+```typescript
 export type Enum = 
     | {"tag": "V1", "fields": { "Foo": boolean, }, }
     | {"tag": "V2", "fields": { "Bar": number, "Baz": number, }, }
