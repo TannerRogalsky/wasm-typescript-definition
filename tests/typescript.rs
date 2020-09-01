@@ -10,19 +10,23 @@ extern crate quote;
 #[macro_use]
 extern crate wasm_bindgen;
 
-use std::borrow::Cow;
 use serde::de::value::Error;
-use wasm_typescript_definition::TypescriptDefinition;
+use std::borrow::Cow;
 use wasm_bindgen::prelude::*;
+use wasm_typescript_definition::TypescriptDefinition;
 
 #[test]
 fn unit_struct() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Unit;
 
-    assert_eq!(Unit___typescript_definition(), quote!{
-        {}
-    }.to_string());
+    assert_eq!(
+        Unit___typescript_definition(),
+        quote! {
+            {}
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -30,9 +34,13 @@ fn newtype_struct() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Newtype(i64);
 
-    assert_eq!(Newtype___typescript_definition(), quote!{
-        number
-    }.to_string());
+    assert_eq!(
+        Newtype___typescript_definition(),
+        quote! {
+            number
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -40,9 +48,13 @@ fn tuple_struct() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Tuple(i64, String);
 
-    assert_eq!(Tuple___typescript_definition(), quote!{
-        [number, string,]
-    }.to_string());
+    assert_eq!(
+        Tuple___typescript_definition(),
+        quote! {
+            [number, string,]
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -50,13 +62,17 @@ fn struct_with_borrowed_fields() {
     #[derive(Serialize, TypescriptDefinition)]
     struct Borrow<'a> {
         raw: &'a str,
-        cow: Cow<'a, str>
+        cow: Cow<'a, str>,
     }
 
     // TODO raw should be string(!)
-    assert_eq!(Borrow___typescript_definition(), quote!{
-        {"raw": any, "cow": any,}
-    }.to_string());
+    assert_eq!(
+        Borrow___typescript_definition(),
+        quote! {
+            {"raw": any, "cow": any,}
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -69,9 +85,13 @@ fn struct_point_with_field_rename() {
         y: i64,
     }
 
-    assert_eq!(Point___typescript_definition(), quote!{
-        {"X": number, "Y": number,}
-    }.to_string());
+    assert_eq!(
+        Point___typescript_definition(),
+        quote! {
+            {"X": number, "Y": number,}
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -88,12 +108,16 @@ fn enum_with_renamed_newtype_variants() {
         #[allow(unused)]
         V3(String),
     }
-    
-    assert_eq!(Enum___typescript_definition(), quote!{
-        | {"tag": "Var1", "fields": boolean,}
-        | {"tag": "Var2", "fields": number,}
-        | {"tag": "Var3", "fields": string,}
-    }.to_string());
+
+    assert_eq!(
+        Enum___typescript_definition(),
+        quote! {
+            | {"tag": "Var1", "fields": boolean,}
+            | {"tag": "Var2", "fields": number,}
+            | {"tag": "Var3", "fields": string,}
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -108,11 +132,15 @@ fn enum_with_unit_variants() {
         V3,
     }
 
-    assert_eq!(Enum___typescript_definition(), quote!{
-        | {"tag": "V1",}
-        | {"tag": "V2",}
-        | {"tag": "V3",}
-    }.to_string());
+    assert_eq!(
+        Enum___typescript_definition(),
+        quote! {
+            | {"tag": "V1",}
+            | {"tag": "V2",}
+            | {"tag": "V3",}
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -127,11 +155,15 @@ fn enum_with_tuple_variants() {
         V3(i64, u64),
     }
 
-    assert_eq!(Enum___typescript_definition(), quote!{
-        | {"tag": "V1", "fields": [number, string,],}
-        | {"tag": "V2", "fields": [number, boolean,],}
-        | {"tag": "V3", "fields": [number, number,],}
-    }.to_string());
+    assert_eq!(
+        Enum___typescript_definition(),
+        quote! {
+            | {"tag": "V1", "fields": [number, string,],}
+            | {"tag": "V2", "fields": [number, boolean,],}
+            | {"tag": "V3", "fields": [number, number,],}
+        }
+        .to_string()
+    );
 }
 
 #[test]
@@ -156,10 +188,14 @@ fn enum_with_struct_variants_and_renamed_fields() {
             quux: String,
         },
     }
-    
-    assert_eq!(Enum___typescript_definition(), quote!{
-        | {"tag": "V1", "fields": { "Foo": boolean, }, }
-        | {"tag": "V2", "fields": { "Bar": number, "Baz": number, }, }
-        | {"tag": "V3", "fields": { "Quux": string, }, }
-    }.to_string());
+
+    assert_eq!(
+        Enum___typescript_definition(),
+        quote! {
+            | {"tag": "V1", "fields": { "Foo": boolean, }, }
+            | {"tag": "V2", "fields": { "Bar": number, "Baz": number, }, }
+            | {"tag": "V3", "fields": { "Quux": string, }, }
+        }
+        .to_string()
+    );
 }

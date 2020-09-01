@@ -11,11 +11,10 @@ repository = "https://github.com/tcr/wasm-typescript-definition"
 proc-macro = true
 
 [dependencies]
-quote = "0.5"
-serde_derive_internals = "0.23"
-syn = "=0.13"
-serde = "1"
-wasm-bindgen = "0.2"
+quote = "1.0"
+syn =   "1.0"
+proc-macro2 = "1.0"
+serde_derive_internals = "0.25"
 
 [dev-dependencies]
 serde_derive = "1"
